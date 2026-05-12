@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flasgger import Swagger
 from dotenv import load_dotenv
 from database.connection import Database
+from database.generic_queries import repository
 from flask_jwt_extended import JWTManager
 
 def create_app():
@@ -35,7 +36,14 @@ def create_app():
     }
     Swagger(app, template=swagger_template)
 
-    Database().initialize()
+    try:
+        Database.initialize()
+        print("Banco de dados carregado.")
+        teste = repository.select_all('produto')
+        print(teste)
+
+    except Exception as e:
+        print(f"Erro ao iniciar: {e}")
 
     #register_routes(app)
 
