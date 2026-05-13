@@ -1,5 +1,6 @@
-from ..config.settings import *
+from config.settings import DB_USER, DB_PASS, DB_DSN, BASE_DIR
 import oracledb
+import os
 
 #Função que garante 
 def init_session(connection, requested_tag):
@@ -12,6 +13,16 @@ class Database:
 
     @classmethod
     def initialize(cls):
+
+        target_lib_dir = os.path.join(BASE_DIR, 'backend', 'instant_client', 'instantclient_23_0')
+
+        # Inicializa o client usando o caminho dinâmico
+        try:
+            oracledb.init_oracle_client(lib_dir=target_lib_dir)
+            print(f"Oracle Client inicializado em: {target_lib_dir}")
+        except Exception as e:
+            print(f"Erro ao localizar o Instant Client: {e}")
+        print(DB_USER)
         #Inicializa os acessos ao banco
         if cls._pool is None:
             cls._pool = oracledb.create_pool(

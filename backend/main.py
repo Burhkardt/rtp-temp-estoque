@@ -6,12 +6,18 @@ from dotenv import load_dotenv
 from database.connection import Database
 from database.generic_queries import repository
 from flask_jwt_extended import JWTManager
+# from app.core.register import register_routes
+
+from modules.product.product_routes import product_bp
+
+
 
 def create_app():
     load_dotenv()
-
     app = Flask(__name__)
     CORS(app, resources={r"/*": {"origins": "*"}})
+
+
 
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "fallback-inseguro")
     app.config["JWT_TOKEN_LOCATION"] = ["headers"]
@@ -45,11 +51,11 @@ def create_app():
     except Exception as e:
         print(f"Erro ao iniciar: {e}")
 
-    #register_routes(app)
+    app.register_blueprint(product_bp, url_prefix='/products')
 
     return app
 
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run()
