@@ -6,12 +6,14 @@ from dotenv import load_dotenv
 from database.connection import Database
 from database.generic_queries import repository
 from flask_jwt_extended import JWTManager
+from modules.product.product_routes import product_bp
 
 def create_app():
     load_dotenv()
 
     app = Flask(__name__)
     CORS(app, resources={r"/*": {"origins": "*"}})
+
 
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "fallback-inseguro")
     app.config["JWT_TOKEN_LOCATION"] = ["headers"]
