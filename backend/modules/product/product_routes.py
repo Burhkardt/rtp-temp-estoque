@@ -17,6 +17,7 @@ def get_all_products():
         return jsonify({"error": str(e)}), 500
 
 
+#Retorna o produto ao ler o código de barra
 @product_bp.route("/barcode/<string:barcode>", methods=["GET"])
 def get_product_by_barcode(barcode):
     try:
@@ -36,6 +37,7 @@ def get_product_by_barcode(barcode):
         return jsonify({"error": str(e)}), 500
 
 
+#Retorna um código de barra para um determinado produto
 @product_bp.route("/<int:product_id>/barcode", methods=["GET"])
 def get_barcode_by_product(product_id):
     try:
@@ -46,7 +48,6 @@ def get_barcode_by_product(product_id):
 
         barcode_value = id_to_barcode(product_id)
 
-        # Gera a imagem do código de barras em memória
         buffer = BytesIO()
         barcode.get("code128", barcode_value, writer=ImageWriter()).write(buffer)
         buffer.seek(0)
