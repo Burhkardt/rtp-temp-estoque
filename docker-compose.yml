@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: local_db
+    environment:
+      POSTGRES_USER: ${LOCAL_DB_USER}
+      POSTGRES_PASSWORD: ${LOCAL_DB_PASSWORD}
+      POSTGRES_DB: ${LOCAL_DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  remote_db:
+    image: postgres:15-alpine
+    container_name: remote_db
+    environment:
+      POSTGRES_USER: ${REMOTE_DB_USER}
+      POSTGRES_PASSWORD: ${REMOTE_DB_PASSWORD}
+      POSTGRES_DB: ${REMOTE_DB_NAME}
+    ports:
+      - "${REMOTE_DB_PORT}:5432"
+    volumes:
+      - pgdata_remote:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fastapi_backend
+    ports:
+      - "${BACKEND_PORT}:8000"
+    env_file:
+      - .env
+    environment:
+      - LOCAL_DATABASE_URL=postgresql://${LOCAL_DB_USER}:${LOCAL_DB_PASSWORD}@db:5432/${LOCAL_DB_NAME}
+      - REMOTE_DATABASE_URL=postgresql://${REMOTE_DB_USER}:${REMOTE_DB_PASSWORD}@remote_db:5432/${REMOTE_DB_NAME}
+    depends_on:
+      - db
+      - remote_db
+    networks:
+      - app-network
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react_frontend
+    ports:
+      - "${FRONTEND_PORT}:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  pgdata:
+  pgdata_remote:
+
+networks:
+  app-network:
+    driver: bridge
