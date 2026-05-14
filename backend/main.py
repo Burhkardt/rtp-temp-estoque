@@ -6,11 +6,7 @@ from dotenv import load_dotenv
 from database.connection import Database
 from database.generic_queries import repository
 from flask_jwt_extended import JWTManager
-# from app.core.register import register_routes
-
-from modules.product.product_routes import product_bp
-
-
+from core.register import register_routes
 
 def create_app():
     load_dotenv()
@@ -23,6 +19,7 @@ def create_app():
     app.config["JWT_TOKEN_LOCATION"] = ["headers"]
 
     JWTManager(app)
+    register_routes(app)
 
     swagger_template = {
         "swagger": "2.0",
@@ -50,8 +47,6 @@ def create_app():
 
     except Exception as e:
         print(f"Erro ao iniciar: {e}")
-
-    app.register_blueprint(product_bp, url_prefix='/products')
 
     return app
 

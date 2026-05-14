@@ -4,20 +4,10 @@ from database.generic_queries import repository
 product_bp = Blueprint("products", __name__)
 
 
-#GET ONE
+#GET All
 @product_bp.route("/", methods=["GET"])
 def get_all_products():
-    """
-    Retorna todos os produtos cadastrados.
-    ---
-    tags:
-      - Produtos
-    responses:
-      200:
-        description: Lista de produtos
-      500:
-        description: Erro interno
-    """
+
     try:
         produtos = repository.select_all_products()
         return jsonify({"data": produtos, "total": len(produtos)}), 200
@@ -25,28 +15,9 @@ def get_all_products():
         return jsonify({"error": f"Erro ao buscar produtos: {str(e)}"}), 500
 
 
-#GET ALL
+#GET ONE
 # @product_bp.route("/<int:id_produto>", methods=["GET"])
 # def get_product_by_id(id_produto):
-#     """
-#     Retorna um produto pelo ID.
-#     ---
-#     tags:
-#       - Produtos
-#     parameters:
-#       - name: id_produto
-#         in: path
-#         type: integer
-#         required: true
-#         description: ID do produto
-#     responses:
-#       200:
-#         description: Produto encontrado
-#       404:
-#         description: Produto não encontrado
-#       500:
-#         description: Erro interno
-#     """
 #     try:
 #         produto = repository.select_product_by_id(id_produto)
 
