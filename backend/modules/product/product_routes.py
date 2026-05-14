@@ -1,29 +1,57 @@
-from flask import Blueprint, jsonify, request
+import barcode
+from barcode.writer import ImageWriter
+from flask import Blueprint, jsonify, send_file
+from io import BytesIO
 from database.generic_queries import repository
+from utils.barcode import barcode_to_id, id_to_barcode
 
 product_bp = Blueprint("products", __name__)
 
 
-#GET All
 @product_bp.route("/", methods=["GET"])
 def get_all_products():
-
     try:
-        produtos = repository.select_all_products()
-        return jsonify({"data": produtos, "total": len(produtos)}), 200
+        products = repository.select_all_products()
+        return jsonify({"data": products, "total": len(products)}), 200
     except Exception as e:
-        return jsonify({"error": f"Erro ao buscar produtos: {str(e)}"}), 500
+        return jsonify({"error": str(e)}), 500
 
 
-#GET ONE
-# @product_bp.route("/<int:id_produto>", methods=["GET"])
-# def get_product_by_id(id_produto):
-#     try:
-#         produto = repository.select_product_by_id(id_produto)
+@product_bp.route("/barcode/<string:barcode>", methods=["GET"])
+def get_product_by_barcode(barcode):
+    try:
+        if len(barcode) < 2:
+            return jsonify({"error": "Código de barras inválido."}), 400
 
-#         if not produto:
-#             return jsonify({"error": f"Produto com ID {id_produto} não encontrado."}), 404
+        product = repository.select_product_by_id(barcode_to_id(barcode))
 
-#         return jsonify({"data": produto}), 200
-#     except Exception as e:
-#         return jsonify({"error": f"Erro ao buscar produto: {str(e)}"}), 500
+        if not product:
+            return jsonify({"error": "Produto não encontrado."}), 404
+
+        return jsonify({"data": product}), 200
+
+    except ValueError:
+        return jsonify({"error": "Formato de código de barras inválido."}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@product_bp.route("/<int:product_id>/barcode", methods=["GET"])
+def get_barcode_by_product(product_id):
+    try:
+        product = repository.select_product_by_id(product_id)
+
+        if not product:
+            return jsonify({"error": "Produto não encontrado."}), 404
+
+        barcode_value = id_to_barcode(product_id)
+
+        # Gera a imagem do código de barras em memória
+        buffer = BytesIO()
+        barcode.get("code128", barcode_value, writer=ImageWriter()).write(buffer)
+        buffer.seek(0)
+
+        return send_file(buffer, mimetype="image/png")
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
