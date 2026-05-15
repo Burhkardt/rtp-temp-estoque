@@ -42,8 +42,6 @@ def create_app():
     try:
         Database.initialize()
         print("Banco de dados carregado.")
-        teste = repository.select_all_products()
-        print(teste)
 
     except Exception as e:
         print(f"Erro ao iniciar: {e}")

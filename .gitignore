@@ -1,16 +1,25 @@
 # Python
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
 
-# Ambiente virtual
+# Ambiente Virtual e Configurações
 venv/
-.env/
+.env
+.venv
+env/
+ENV/
 
-# VSCode
+# VSCode e IDEs
 .vscode/
+.idea/
 
 # Sistema
 .DS_Store
 Thumbs.db
-.env
-/backend/instant_client
+
+# Oracle Client (Heavy binaries)
+/backend/instant_client/
