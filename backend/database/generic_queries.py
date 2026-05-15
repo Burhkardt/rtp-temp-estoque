@@ -6,20 +6,23 @@ class GenericRepository:
         query = "SELECT DS_PRODUTO FROM PRODUTO"
         return Database.execute(query)
 
-    # def select_product_by_id(self, id):
-    #     # Em Oracle Python, usamos :nome para binds, igual ao Node
-    #     query = """
-    #         SELECT 
-    #         A.DS_PRODUTO, 
-    #         B.QT_ESTOQUE_ATUAL 
-    #         FROM PRODUTO A 
-    #         JOIN EST_PRO B 
-    #         ON A.CD_PRODUTO = B.CD_PRODUTO
-    #     WHERE A.CD_PRODUTO = :id
-    #     """
-    #     binds = {"id": id}
-    #     result = Database.execute(query, binds)
-    #     return result[0] if result else None
+    def select_product_by_id(self, id):
+        # Em Oracle Python, usamos :nome para binds, igual ao Node
+        query = """
+            SELECT 
+            A.DS_PRODUTO, 
+            B.QT_ESTOQUE_ATUAL 
+            FROM PRODUTO A 
+            JOIN EST_PRO B 
+            ON A.CD_PRODUTO = B.CD_PRODUTO
+        WHERE A.CD_PRODUTO = :id
+        """
+        binds = {"id": id}
+        result = Database.execute(query, binds)
+        # Transforma os dados em uma lista para facilitar o acesso (DS_PRODUTO, QT_ESTOQUE_ATUAL)
+        if result:
+            return [result[0]['ds_produto'], result[0]['qt_estoque_atual']]
+        return None
     
     # def select_product_by_name(self, name):
 
