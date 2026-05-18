@@ -1,5 +1,6 @@
 from flask import jsonify, Blueprint, request
-from backend.utils.barcode_by_image import read_image_and_delete
+from utils.barcode_by_image import read_image_and_delete
+import os
 
 bar_up_bp = Blueprint("barcodeup", __name__)
 
@@ -13,14 +14,26 @@ def upload_barcode():
     if file.filename == '':
         return jsonify({'error': 'Nome do arquivo vazio'}), 400
     
-    # 2. Define o caminho onde a imagem vai ser salva temporariamente
-    # Usamos o próprio nome original do arquivo (file.filename) para ser dinâmico
-    caminho_salvamento = f"backend/utils/temp_barcode/{file.filename}"
+    # 2. Construção dinâmica e segura do caminho (MUDANÇA AQUI)
+    # Descobre onde este arquivo de rotas atual está localizado
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__)) 
+    
+    # Sobe ou navega até a pasta de destino de forma nativa.
+    # Exemplo: Se este arquivo de rota está em 'backend/routes/leitor.py',
+    # vamos apontar corretamente para a pasta irmã 'utils/temp_barcode'
+    # Ajuste os argumentos abaixo dependendo de onde este arquivo de rota está guardado!
+    caminho_pasta = os.path.join(BASE_DIR, "..", "utils", "temp_barcode")
+    
+    # Garante que a pasta física realmente existe antes de salvar (evita FileNotFoundError)
+    os.makedirs(caminho_pasta, exist_ok=True)
+    
+    # Junta a pasta com o nome do arquivo de forma segura para o Windows/Linux
+    caminho_salvamento = os.path.join(caminho_pasta, file.filename)
     
     # 3. Salva o arquivo no disco
     file.save(caminho_salvamento)
     
-    # 4. Chama a sua função passando o caminho dinâmico do arquivo que acabou de ser salvo
+    # 4. Chama a sua função passando o caminho absoluto e seguro
     codigos_extraidos = read_image_and_delete(caminho_salvamento)
     
     # 5. Verifica se algum código foi de fato encontrado
@@ -28,7 +41,7 @@ def upload_barcode():
         return jsonify({
             'status': 'erro', 
             'message': 'Nenhum código de barras válido foi detectado na imagem.'
-        }), 422 # Código 422 significa que o arquivo foi recebido, mas os dados eram ilegíveis
+        }), 422
     
     # 6. Retorna o sucesso e a lista de códigos de volta para o JavaScript do Frontend
     return jsonify({
