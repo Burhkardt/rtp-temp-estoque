@@ -14,15 +14,17 @@ class Database:
     @classmethod
     def initialize(cls):
 
-        target_lib_dir = os.path.join(BASE_DIR, 'backend', 'instant_client', 'instantclient_23_0')
+        target_lib_dir = os.path.join(BASE_DIR, 'backend', 'instant_client', 'instantclient_23_4')
 
         # Inicializa o client usando o caminho dinâmico
         try:
             oracledb.init_oracle_client(lib_dir=target_lib_dir)
-            print(f"Oracle Client inicializado em: {target_lib_dir}")
+            print(f"Oracle Client inicializado no modo Thick em: {target_lib_dir}")
         except Exception as e:
-            print(f"Erro ao localizar o Instant Client: {e}")
-        print(DB_USER)
+            print(f"Erro ao localizar o Instant Client (caindo para modo Thin): {e}")
+
+        # Inicializa os acessos ao banco no modo Thick ou Thin
+        print(f"Iniciando pool com usuário: {DB_USER}")
         #Inicializa os acessos ao banco
         if cls._pool is None:
             cls._pool = oracledb.create_pool(

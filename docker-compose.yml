@@ -1,16 +1,42 @@
 services:
+  db-test:
+    image: gvenzl/oracle-free:slim
+    container_name: rtp-db-test
+    environment:
+      - ORACLE_PASSWORD=oracle
+      - ORACLE_DATABASE=TESTE
+      - APP_USER=estoque_teste
+      - APP_USER_PASSWORD=estoque_teste
+    ports:
+      - "1521:1521"
+    volumes:
+      - ./backend/database/teste:/container-entrypoint-initdb.d
+    restart: always
+
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile
     container_name: rtp-backend
     ports:
       - "5000:5000"
     env_file:
       - .env
-    volumes:
-      - ./backend:/app/backend
     environment:
       - FLASK_ENV=development
+    depends_on:
+      db-test:
+        condition: service_healthy
     restart: always
-
-
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: rtp-frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    restart: always
