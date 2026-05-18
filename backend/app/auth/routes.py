@@ -1,57 +1,35 @@
-from fastapi import APIRouter, HTTPException, status
+from flask import Blueprint, request, jsonify
 
-from app.auth.schemas import (
-    LoginRequest,
-    LoginResponse
+from app.auth.jwt_handler import create_access_token
+
+auth_bp = Blueprint(
+    "auth",
+    __name__
 )
 
-from app.models.user_model import UserModel
+# =====================================
+# LOGIN
+# =====================================
 
-from app.auth.security import verify_password
-from app.auth.service import create_access_token
+@auth_bp.route("/login", methods=["POST"])
+def login():
 
-router = APIRouter(
-    prefix = "/auth",
-    tags = ["Autenticação"]
-)
+    data = request.get_json()
 
-@router.post(
-    "/login",
-    response_model = LoginResponse
-)
-def Login(dados: LoginRequest):
+    username = data.get("username")
+    password = data.get("password")
 
-    user = UserModel.get_by_cpf(dados.cpf)
+    # LOGIN FAKE PARA TESTE
+    if username == "admin" and password == "123":
 
-    if not user:
-        raise HTTPException(
-            status_code = status.HTTP_401_UNAUTHORIZED,
-            detail = "Credenciais inválidas"
-        )
-    
-    if not user["ativo"]:
-        raise HTTPException(
-            status_code = status.HTTP_403_FORBIDDEN,
-            detail = "Usuário inativo"
-        )
-    
-    if not verify_password(
-        dados.senha,
-        user["senha"]
-    ):
-        raise HTTPException(
-            status_code = status.HTTP_401_UNAUTHORIZED,
-            detail = "Credenciais inválidas"
-        )
-    
-    token = create_access_token({
-        "sub": str(user['id']),
-        "perfil": user["perfil"]
-    })
+        token = create_access_token({
+            "user_id": 1
+        })
 
-    return {
-        "access_token": token,
-        "token_type": "bearer",
-        "nome": user["nome"],
-        "perfil": user["perfil"]
-    }
+        return jsonify({
+            "access_token": token
+        })
+
+    return jsonify({
+        "error": "Usuário ou senha inválidos"
+    }), 401
