@@ -12,7 +12,7 @@
 
     <!-- Design System CSS -->
 <link rel="stylesheet" href="../../css/global.css">
-<link rel="stylesheet" href="../../css/navbar.css">
+<link rel="stylesheet" href="../navbar/navbar.css">
 <link rel="stylesheet" href="../../css/botoes.css">
 <link rel="stylesheet" href="../../css/inputs.css">
 <link rel="stylesheet" href="../../css/filtros.css">
@@ -82,57 +82,48 @@
                             <table class="tabela-padrao" style="min-width: 480px;">
                                 <thead>
                                     <tr>
-                                        <th class="col-check">
-                                            <input type="checkbox" id="check-todos">
+                                        <th class="col-check" style="width: 100px; text-align: left;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <input type="checkbox" id="check-todos">
+                                                <span>TODOS</span>
+                                            </div>
                                         </th>
-                                        <th>TODOS</th>
                                         <th>CÓDIGO</th>
                                         <th>PRODUTO</th>
                                         <th>ESTOQUE</th>
-                                        <th>STATUS</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tbody-produtos">
-                                    <tr>
+                                    <!-- <tr>
                                         <td class="col-check"><input type="checkbox" checked></td>
-                                        <td></td>
                                         <td>1205000545865</td>
                                         <td>Dipirona</td>
                                         <td>200</td>
-                                        <td>Ativo</td>
                                     </tr>
                                     <tr>
                                         <td class="col-check"><input type="checkbox" checked></td>
-                                        <td></td>
                                         <td>1205000545865</td>
                                         <td>Dipirona</td>
                                         <td>200</td>
-                                        <td>Inativo</td>
                                     </tr>
                                     <tr>
                                         <td class="col-check"><input type="checkbox" checked></td>
-                                        <td></td>
                                         <td>1205000545865</td>
                                         <td>Dipirona</td>
                                         <td>200</td>
-                                        <td>Ativo</td>
                                     </tr>
                                     <tr>
                                         <td class="col-check"><input type="checkbox"></td>
-                                        <td></td>
                                         <td>1205000545865</td>
                                         <td>Dipirona</td>
                                         <td>200</td>
-                                        <td>Ativo</td>
                                     </tr>
                                     <tr>
                                         <td class="col-check"><input type="checkbox"></td>
-                                        <td></td>
                                         <td>1205000545865</td>
                                         <td>Dipirona</td>
                                         <td>200</td>
-                                        <td>Ativo</td>
-                                    </tr>
+                                    </tr> -->
                                 </tbody>
                             </table>
                         </div>
@@ -149,48 +140,21 @@
                     <div class="col-detalhe">
 
                         <!-- Detalhes do Produto -->
-                        <p class="titulo-secao">DETALHES DO PRODUTO</p>
+                        <!-- <p class="titulo-secao">DETALHES DO PRODUTO</p>
                         <div class="detalhe-info" id="detalhe-produto">
                             Código: 001<br>
                             Produto: Dipirona 500g<br>
                             Descrição: Analgésico<br>
-                            Status: Ativo
                         </div>
 
-                        <hr class="detalhe-divisoria">
+                        <hr class="detalhe-divisoria"> -->
 
                         <!-- Código de Barras -->
                         <p class="titulo-secao">CÓDIGO DE BARRAS</p>
-                        <div class="barcode-container">
-                            <svg width="160" height="60" viewBox="0 0 160 60">
-                                <!-- Barras simuladas -->
-                                <g fill="#1D4587">
-                                    <rect x="4"  width="2" height="60"/><rect x="8"  width="1" height="60"/>
-                                    <rect x="11" width="3" height="60"/><rect x="16" width="1" height="60"/>
-                                    <rect x="19" width="2" height="60"/><rect x="23" width="1" height="60"/>
-                                    <rect x="26" width="3" height="60"/><rect x="31" width="1" height="60"/>
-                                    <rect x="34" width="2" height="60"/><rect x="38" width="2" height="60"/>
-                                    <rect x="42" width="1" height="60"/><rect x="45" width="3" height="60"/>
-                                    <rect x="50" width="1" height="60"/><rect x="53" width="2" height="60"/>
-                                    <rect x="57" width="1" height="60"/><rect x="60" width="3" height="60"/>
-                                    <rect x="65" width="1" height="60"/><rect x="68" width="2" height="60"/>
-                                    <rect x="72" width="2" height="60"/><rect x="76" width="1" height="60"/>
-                                    <rect x="79" width="3" height="60"/><rect x="84" width="1" height="60"/>
-                                    <rect x="87" width="2" height="60"/><rect x="91" width="1" height="60"/>
-                                    <rect x="94" width="3" height="60"/><rect x="99" width="1" height="60"/>
-                                    <rect x="102" width="2" height="60"/><rect x="106" width="2" height="60"/>
-                                    <rect x="110" width="1" height="60"/><rect x="113" width="3" height="60"/>
-                                    <rect x="118" width="1" height="60"/><rect x="121" width="2" height="60"/>
-                                    <rect x="125" width="1" height="60"/><rect x="128" width="3" height="60"/>
-                                    <rect x="133" width="1" height="60"/><rect x="136" width="2" height="60"/>
-                                    <rect x="140" width="2" height="60"/><rect x="144" width="1" height="60"/>
-                                    <rect x="147" width="3" height="60"/><rect x="152" width="2" height="60"/>
-                                </g>
-                            </svg>
-                        </div>
+                        <div id="barcode-area" class="barcode-container"></div>
 
                         <div class="text-center mt-2">
-                            <button class="btn-primario" id="btn-imprimir">
+                            <button class="btn-primario" id="btn-imprimir" style="display:none;">
                                 IMPRIMIR
                             </button>
                         </div>
