@@ -17,7 +17,7 @@ CHANNEL_ID = os.getenv("TELEGRAM_CHANNEL_ID")
 
 
 # Auxiliar para envio de mensagem de texto
-def send_to_channel(text: str, parse_mode: str = "Markdown") -> dict:
+def send_message_to_channel(text: str, parse_mode: str = "Markdown") -> dict:
     response = requests.post(f"{TELEGRAM_API}/sendMessage", json={
         "chat_id": CHANNEL_ID,
         "text": text,
@@ -41,72 +41,93 @@ def send_photo_to_channel(photo_bytes, caption: str, parse_mode: str = "Markdown
 # Envia a mensagem de texto para o canal
 @telegram_bp.route("/send", methods=["POST"])
 def send_message():
-    data = request.get_json()
-    message = data.get("message")
-    parse_mode = data.get("parse_mode", "Markdown")
-
-    if not message:
-        return jsonify({"error": "O campo 'message' é obrigatório"}), 400
-
-    result = send_to_channel(message, parse_mode)
-
-    if result.get("ok"):
-        return jsonify({"success": True, "message_id": result["result"]["message_id"]}), 200
-
-    return jsonify({"success": False, "error": result.get("description")}), 500
-
-
-# Nova rota integrada: Gera Barcode + Envia para Telegram
-# Suporta dados MOKADOS para teste sem banco de dados
-@telegram_bp.route("/send-product-tag/<int:product_id>", methods=["POST"])
-def send_product_tag(product_id):
     try:
-        # Flag para forçar mock enquanto não tem acesso ao banco
-        use_mock = request.args.get("mock", "true").lower() == "true"
+        data = request.get_json()
 
-        if use_mock:
-            # DADOS MOKADOS PARA TESTE
-            product_name = "PRODUTO TESTE MOKADO"
-            stock = 99
-            print(f"Usando dados MOKADOS para o produto {product_id}")
-        else:
-            # BUSCA REAL NO BANCO (Ativar quando estiver na rede)
-            product = repository.select_product_by_id(product_id)
-            if not product:
-                return jsonify({"error": "Produto não encontrado no banco."}), 404
-            product_name = product[0]
-            stock = product[1]
+        if not data:
+            return jsonify({"error": "JSON inválido"}), 400
 
-        # 1. Gerar valor do barcode (ex: 1000000001)
-        barcode_value = id_to_barcode(product_id)
+        message = data.get("message")
+        parse_mode = data.get("parse_mode", "Markdown")
 
-        # 2. Gerar imagem do barcode em memória (BytesIO)
-        buffer = BytesIO()
-        barcode.get("code128", barcode_value, writer=ImageWriter()).write(buffer)
-        buffer.seek(0)
+        if not message:
+            return jsonify({"error": "O campo 'message' é obrigatório"}), 400
 
-        # 3. Montar a legenda (Caption)
-        caption = (
-            f"📦 *Etiqueta de Patrimônio*\n\n"
-            f"🔹 *ID:* `{product_id}`\n"
-            f"🔹 *Produto:* {product_name}\n"
-            f"🔹 *Estoque:* {stock}\n"
-            f"🔹 *Código:* `{barcode_value}`"
-        )
-
-        # 4. Enviar Foto + Legenda para o Telegram
-        result = send_photo_to_channel(buffer, caption)
+        result = send_message_to_channel(message, parse_mode)
 
         if result.get("ok"):
             return jsonify({
-                "success": True, 
-                "mode": "mock" if use_mock else "database",
+                "success": True,
                 "message_id": result["result"]["message_id"]
             }), 200
-        
-        return jsonify({"success": False, "error": result.get("description")}), 500
+
+        return jsonify({
+            "success": False,
+            "error": result.get("description", "Erro ao enviar mensagem")
+        }), 500
 
     except Exception as e:
-        return jsonify({"error": f"Erro interno: {str(e)}"}), 500
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 
+#Envia a mensagem completa, dados do produto com o código de barras
+@telegram_bp.route("/send-product-tag/<int:product_id>", methods=["POST"])
+def send_product_tag(product_id):
+
+    try:
+
+        product = repository.select_product_by_id(product_id)
+
+        if not product:
+            return jsonify({
+                "success": False,
+                "error": "Produto não encontrado."
+            }), 404
+
+        product_name = product["name"]
+        stock = product["stock"]
+
+        barcode_value = id_to_barcode(product_id)
+
+        buffer = BytesIO()
+
+        barcode.get(
+            "code128",
+            barcode_value,
+            writer=ImageWriter()
+        ).write(buffer)
+
+        buffer.seek(0)
+
+        caption = (
+            f"📦 *Etiqueta de Patrimônio*\n\n"
+            f"🆔 *ID:* `{product_id}`\n"
+            f"📌 *Produto:* {product_name}\n"
+            f"📦 *Estoque Atual:* {stock}\n"
+            f"🏷️ *Código:* `{barcode_value}`"
+        )
+
+        result = send_photo_to_channel(buffer, caption)
+
+        if result.get("ok"):
+
+            return jsonify({
+                "success": True,
+                "message": "Etiqueta enviada com sucesso.",
+                "message_id": result["result"]["message_id"]
+            }), 200
+
+        return jsonify({
+            "success": False,
+            "error": result.get("description")
+        }), 500
+
+    except Exception as e:
+
+        return jsonify({
+            "success": False,
+            "error": "Erro interno do servidor."
+        }), 500
