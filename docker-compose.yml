@@ -12,6 +12,15 @@ services:
     volumes:
       - ./backend/database/teste:/container-entrypoint-initdb.d
     restart: always
+    
+    # Healthcheck adicionado para o depends_on do backend funcionar
+    # sem isso o container do banco não sinaliza que está pronto
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 30s   # verifica a cada 30s
+      timeout: 10s    # tempo limite por tentativa
+      retries: 10     # tenta 10 vezes antes de falhar
+      start_period: 60s  # aguarda 60s antes de começar a verificar
 
   backend:
     build:
