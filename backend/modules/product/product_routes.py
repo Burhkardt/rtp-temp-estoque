@@ -20,10 +20,11 @@ def get_all_products():
 #Retorna o produto ao ler o código de barra
 @product_bp.route("/barcode/<string:barcode>", methods=["GET"])
 def get_product_by_barcode(barcode):
+    
+    if len(barcode) < 2:
+        return jsonify({"error": "Código de barras inválido."}), 400
+    
     try:
-        if len(barcode) < 2:
-            return jsonify({"error": "Código de barras inválido."}), 400
-
         product = repository.select_product_by_id(barcode_to_id(barcode))
 
         if not product:
