@@ -1,12 +1,8 @@
-// ══════════════════════════════════════
-// produtos.js — Lógica da página Produtos
-// ══════════════════════════════════════
 
 const API_URL = 'http://localhost:5000';
 
 const checkTodos  = document.getElementById('check-todos');
 const tbody       = document.getElementById('tbody-produtos');
-const detalheDiv  = document.getElementById('detalhe-produto');
 const barcodeArea = document.getElementById('barcode-area');
 const btnImprimir = document.getElementById('btn-imprimir');
 
@@ -53,14 +49,14 @@ async function carregarProdutos() {
         tbody.innerHTML = '';
         produtos.forEach(produto => {
             const tr = document.createElement('tr');
-            tr.dataset.id      = produto.cd_produto;
-            tr.dataset.codigo  = produto.cd_produto;
-            tr.dataset.nome    = produto.ds_produto;
-            tr.dataset.estoque = produto.qt_estoque_atual ?? '-';
+            tr.dataset.id      = produto.cd_produto;  // TODO: confirmar campo com backend
+            tr.dataset.codigo  = produto.cd_produto;  // TODO: confirmar campo com backend
+            tr.dataset.nome    = produto.ds_produto;  // TODO: confirmar campo com backend
+            tr.dataset.estoque = produto.qt_estoque_atual ?? '-';   // TODO: confirmar campo com backend
 
             tr.innerHTML = `
                 <td class="col-check"><input type="checkbox"></td>
-                <td>${produto.cd_produto}</td>
+                <td>${produto.cd_produto}</td> 
                 <td>${produto.ds_produto}</td>
                 <td>${produto.qt_estoque_atual ?? '-'}</td>
             `;
@@ -128,21 +124,13 @@ async function atualizarPainel() {
 
     // Nenhum selecionado
     if (selecionados.length === 0) {
-        detalheDiv.innerHTML = `
-            <span style="color:#adb5bd; font-size:0.85rem;">
-                Nenhum item ainda foi selecionado.
-            </span>`;
-        barcodeArea.innerHTML = '';
+        barcodeArea.innerHTML = '<span style="color:#adb5bd; font-size:0.85rem;">Nenhum item selecionado.</span>';
         btnImprimir.style.display = 'none';
         return;
     }
 
     // Mais de um selecionado
     if (selecionados.length > 1) {
-        detalheDiv.innerHTML = `
-            <span style="color:#adb5bd; font-size:0.85rem;">
-                ${selecionados.length} itens selecionados.
-            </span>`;
         barcodeArea.innerHTML = `
             <button class="btn-outline-vermelho w-100" id="btn-gerar-lote">
                 GERAR CÓDIGO DE BARRAS EM LOTE
@@ -152,21 +140,11 @@ async function atualizarPainel() {
     }
 
     // Exatamente um selecionado
-    const tr      = selecionados[0];
-    const id      = tr.dataset.id;
-    const codigo  = tr.dataset.codigo;
-    const nome    = tr.dataset.nome;
-    const estoque = tr.dataset.estoque;
-
-    detalheDiv.innerHTML = `
-        Código: ${codigo}<br>
-        Produto: ${nome}<br>
-        Estoque: ${estoque}
-    `;
-
+    const id = selecionados[0].dataset.id;
     await carregarBarcode(id);
 }
 
+// CÓDIGO DE BARRAS
 async function carregarBarcode(id) {
     barcodeArea.innerHTML = '<span style="color:#adb5bd; font-size:0.8rem;">Carregando código de barras...</span>';
     btnImprimir.style.display = 'none';
