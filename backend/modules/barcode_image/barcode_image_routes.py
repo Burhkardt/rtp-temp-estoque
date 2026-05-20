@@ -6,6 +6,36 @@ bar_up_bp = Blueprint("barcodeup", __name__)
 
 @bar_up_bp.route("/upload", methods=['POST'])
 def upload_barcode():
+    """
+    Upload an image and extract barcode(s)
+    ---
+    tags:
+      - BarcodeImage
+    consumes:
+      - multipart/form-data
+    parameters:
+      - name: barcode_image
+        in: formData
+        type: file
+        required: true
+        description: Imagem contendo código(s) de barras
+    responses:
+      200:
+        description: Códigos extraídos com sucesso
+        schema:
+          type: object
+          properties:
+            status:
+              type: string
+            codigos:
+              type: array
+              items:
+                type: string
+      400:
+        description: Arquivo não enviado ou inválido
+      422:
+        description: Nenhum código de barras válido detectado
+    """
     # 1. Validações iniciais do arquivo enviado
     if 'barcode_image' not in request.files:
         return jsonify({'error': 'Nenhum arquivo recebido pelo servidor'}), 400

@@ -1,10 +1,9 @@
 import os
-from flask import Flask
+from flask import Flask, redirect
 from flask_cors import CORS
 from flasgger import Swagger
 from dotenv import load_dotenv
 from database.connection import Database
-from database.generic_queries import repository
 from flask_jwt_extended import JWTManager
 from core.register import register_routes
 
@@ -21,11 +20,25 @@ def create_app():
     JWTManager(app)
     register_routes(app)
 
+    app.config["SWAGGER"] = {
+        "title": "API RTP Estoque",
+        "uiversion": 3,
+        "specs": [
+            {
+                "endpoint": "apispec_1",
+                "route": "/apispec_1.json",
+                "rule_filter": lambda rule: True,
+                "model_filter": lambda tag: True,
+            }
+        ],
+        "specs_route": "/apidocs/"
+    }
+
     swagger_template = {
         "swagger": "2.0",
         "info": {
-            "title": "API RTP Patrimônio",
-            "description": "Documentação interativa da API do sistema de Patrimônio.",
+            "title": "API RTP Estoque",
+            "description": "Documentação interativa da API do sistema de leitura de código de barra para estoque.",
             "version": "1.0.0"
         },
         "securityDefinitions": {
@@ -38,6 +51,10 @@ def create_app():
         },
     }
     Swagger(app, template=swagger_template)
+
+    @app.route('/')
+    def index():
+        return redirect('/apidocs/')
 
     try:
         Database.initialize()
