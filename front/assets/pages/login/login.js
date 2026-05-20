@@ -9,12 +9,12 @@ const usuarios = [
         nome: "Administrador",
         perfil: "admin"
     },
-    {
-        cpf: "11111111111",
-        senha: "teste",
-        nome: "Usuário Teste",
-        perfil: "usuario"
-    }
+    // {
+    //     cpf: "11111111111",
+    //     senha: "teste",
+    //     nome: "Usuário Teste",
+    //     perfil: "usuario"
+    // }
 ];
 
 
