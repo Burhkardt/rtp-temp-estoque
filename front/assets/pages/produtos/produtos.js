@@ -4,9 +4,9 @@
 
 const API_URL = 'http://localhost:5000';
 
-const checkTodos  = document.getElementById('check-todos');
-const tbody       = document.getElementById('tbody-produtos');
-const detalheDiv  = document.getElementById('detalhe-produto');
+const checkTodos = document.getElementById('check-todos');
+const tbody = document.getElementById('tbody-produtos');
+const detalheDiv = document.getElementById('detalhe-produto');
 const barcodeArea = document.getElementById('barcode-area');
 const btnImprimir = document.getElementById('btn-imprimir');
 
@@ -53,9 +53,9 @@ async function carregarProdutos() {
         tbody.innerHTML = '';
         produtos.forEach(produto => {
             const tr = document.createElement('tr');
-            tr.dataset.id      = produto.cd_produto;
-            tr.dataset.codigo  = produto.cd_produto;
-            tr.dataset.nome    = produto.ds_produto;
+            tr.dataset.id = produto.cd_produto;
+            tr.dataset.codigo = produto.cd_produto;
+            tr.dataset.nome = produto.ds_produto;
             tr.dataset.estoque = produto.qt_estoque_atual ?? '-';
 
             tr.innerHTML = `
@@ -93,10 +93,10 @@ function configurarCheckboxes() {
     tbody.addEventListener('change', (e) => {
         if (e.target.type !== 'checkbox') return;
 
-        const checks        = [...tbody.querySelectorAll('input[type="checkbox"]')];
+        const checks = [...tbody.querySelectorAll('input[type="checkbox"]')];
         const totalMarcados = checks.filter(c => c.checked).length;
 
-        checkTodos.checked       = totalMarcados === checks.length;
+        checkTodos.checked = totalMarcados === checks.length;
         checkTodos.indeterminate = totalMarcados > 0 && totalMarcados < checks.length;
 
         atualizarPainel();
@@ -152,10 +152,10 @@ async function atualizarPainel() {
     }
 
     // Exatamente um selecionado
-    const tr      = selecionados[0];
-    const id      = tr.dataset.id;
-    const codigo  = tr.dataset.codigo;
-    const nome    = tr.dataset.nome;
+    const tr = selecionados[0];
+    const id = tr.dataset.id;
+    const codigo = tr.dataset.codigo;
+    const nome = tr.dataset.nome;
     const estoque = tr.dataset.estoque;
 
     detalheDiv.innerHTML = `
@@ -189,7 +189,7 @@ async function carregarBarcode(id) {
             return;
         }
 
-        const blob   = await resposta.blob();
+        const blob = await resposta.blob();
         const imgUrl = URL.createObjectURL(blob);
 
         barcodeArea.innerHTML = `<img src="${imgUrl}" style="max-width:100%; height:auto;">`;

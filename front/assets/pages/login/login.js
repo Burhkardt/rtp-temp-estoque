@@ -1,4 +1,22 @@
-const API_BASE_URL = "http://127.0.0.1:8000";
+// ============================================================
+// USUÁRIOS LOCAIS
+// ============================================================
+
+const usuarios = [
+    {
+        cpf: "12345678900",
+        senha: "1234",
+        nome: "Administrador",
+        perfil: "admin"
+    },
+    {
+        cpf: "11111111111",
+        senha: "teste",
+        nome: "Usuário Teste",
+        perfil: "usuario"
+    }
+];
+
 
 // ============================================================
 // LOADING + LOGIN
@@ -59,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     formulario.addEventListener(
         "submit",
-        async function (evento) {
+        function (evento) {
 
             evento.preventDefault();
 
@@ -84,93 +102,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
             botaoLogin.innerText = "Entrando...";
 
-            try {
+            // ============================================================
+            // PROCURA USUÁRIO
+            // ============================================================
 
-                // ============================================================
-                // REQUISIÇÃO PARA O BACKEND
-                // ============================================================
+            const usuarioEncontrado =
+                usuarios.find((usuario) => {
 
-                const resposta = await fetch(
-                    `${API_BASE_URL}/auth/login`,
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-
-                        body: JSON.stringify({
-                            cpf: cpf,
-                            senha: senha
-                        })
-                    }
-                );
-
-                const dados = await resposta.json();
-
-                // ============================================================
-                // ERRO LOGIN
-                // ============================================================
-
-                if (!resposta.ok) {
-
-                    throw new Error(
-                        dados.detail || "Erro ao realizar login"
+                    return (
+                        usuario.cpf === cpf &&
+                        usuario.senha === senha
                     );
-                }
 
-                // ============================================================
-                // SALVA TOKEN
-                // ============================================================
+                });
 
-                localStorage.setItem(
-                    "token",
-                    dados.access_token
-                );
+            // ============================================================
+            // LOGIN SUCESSO
+            // ============================================================
 
-                // ============================================================
-                // SALVA DADOS USUÁRIO
-                // ============================================================
+            if (usuarioEncontrado) {
 
                 localStorage.setItem(
                     "usuario",
                     JSON.stringify({
-                        nome: dados.nome,
-                        perfil: dados.perfil
+                        nome: usuarioEncontrado.nome,
+                        perfil: usuarioEncontrado.perfil
                     })
                 );
 
-                // ============================================================
-                // LOGIN SUCESSO
-                // ============================================================
-
                 alert("Login realizado com sucesso!");
 
-                // ============================================================
-                // REDIRECIONA
-                // ============================================================
-
                 window.location.href =
-                    "pages/dashboard.html";
+                    "assets/pages/produtos/produtos.html";
 
-            } catch (erro) {
+            } else {
 
-                // ============================================================
-                // ERRO
-                // ============================================================
+                alert("CPF ou senha inválidos!");
 
-                alert(erro.message);
-
-            } finally {
-
-                // ============================================================
-                // REATIVA BOTÃO
-                // ============================================================
-
-                botaoLogin.disabled = false;
-
-                botaoLogin.innerText = "Acessar";
             }
+
+            // ============================================================
+            // REATIVA BOTÃO
+            // ============================================================
+
+            botaoLogin.disabled = false;
+
+            botaoLogin.innerText = "Acessar";
         }
     );
 });
