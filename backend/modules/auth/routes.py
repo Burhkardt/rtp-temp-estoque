@@ -4,6 +4,16 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 
 auth_bp = Blueprint('auth', __name__)
 
+# Usuários mockados para autenticação sem banco de dados
+USUARIOS_MOCK = [
+    {
+        "email": "teste@email.com",
+        "password": "123456",
+        "name": "Usuário Teste"
+    }
+]
+
+
 @auth_bp.route('/login', methods=['POST'])
 def login():
 
@@ -19,10 +29,18 @@ def login():
     usuario = dados.get('username')
     senha = dados.get('password')
 
-    if usuario != 'admin' or senha != '1234':
+    if not usuario or not senha:
+        return jsonify({"erro": "Usuário e senha são obrigatórios."}), 400
+
+    usuario_valido = next(
+        (user for user in USUARIOS_MOCK if user["email"] == usuario and user["password"] == senha),
+        None
+    )
+
+    if not usuario_valido:
         return jsonify({"erro": "Usuário ou senha incorretos"}), 401
 
-    token_acesso = create_access_token(identity=usuario)
+    token_acesso = create_access_token(identity=usuario_valido["email"])
     return jsonify({"token": token_acesso}), 200
 
 # ==========================================
