@@ -1,6 +1,3 @@
-// ══════════════════════════════════════
-// produtos.js — Lógica da página Produtos
-// ══════════════════════════════════════
 
 const API_URL = 'http://localhost:5000';
 
@@ -60,7 +57,7 @@ async function carregarProdutos() {
 
             tr.innerHTML = `
                 <td class="col-check"><input type="checkbox"></td>
-                <td>${produto.cd_produto}</td>
+                <td>${produto.cd_produto}</td> 
                 <td>${produto.ds_produto}</td>
                 <td>${produto.qt_estoque_atual ?? '-'}</td>
             `;
@@ -128,21 +125,13 @@ async function atualizarPainel() {
 
     // Nenhum selecionado
     if (selecionados.length === 0) {
-        detalheDiv.innerHTML = `
-            <span style="color:#adb5bd; font-size:0.85rem;">
-                Nenhum item ainda foi selecionado.
-            </span>`;
-        barcodeArea.innerHTML = '';
+        barcodeArea.innerHTML = '<span style="color:#adb5bd; font-size:0.85rem;">Nenhum item selecionado.</span>';
         btnImprimir.style.display = 'none';
         return;
     }
 
     // Mais de um selecionado
     if (selecionados.length > 1) {
-        detalheDiv.innerHTML = `
-            <span style="color:#adb5bd; font-size:0.85rem;">
-                ${selecionados.length} itens selecionados.
-            </span>`;
         barcodeArea.innerHTML = `
             <button class="btn-outline-vermelho w-100" id="btn-gerar-lote">
                 GERAR CÓDIGO DE BARRAS EM LOTE
@@ -167,6 +156,7 @@ async function atualizarPainel() {
     await carregarBarcode(id);
 }
 
+// CÓDIGO DE BARRAS
 async function carregarBarcode(id) {
     barcodeArea.innerHTML = '<span style="color:#adb5bd; font-size:0.8rem;">Carregando código de barras...</span>';
     btnImprimir.style.display = 'none';

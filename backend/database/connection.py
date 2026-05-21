@@ -19,7 +19,7 @@ class Database:
         # Inicializa o client usando o caminho dinâmico
         try:
             oracledb.init_oracle_client(lib_dir=target_lib_dir)
-            print(f"Oracle Client inicializado no modo Thick em: {target_lib_dir}")
+            print(f"Oracle Client inicializado em: {target_lib_dir}")
         except Exception as e:
             print(f"Erro ao localizar o Instant Client (caindo para modo Thin): {e}")
 
@@ -43,9 +43,10 @@ class Database:
 
         with cls._pool.acquire() as conn:
             with conn.cursor() as cursor:
-                cursor.rowfactory = lambda *args: dict(zip([d[0].lower() for d in cursor.description], args))
-
                 cursor.execute(sql, binds or {})
+                if cursor.description:
+                    columns = [d[0].lower() for d in cursor.description]
+                    cursor.rowfactory = lambda *args: dict(zip(columns, args))
 
                 if sql.strip().upper().startswith("SELECT"):
                     return cursor.fetchall()

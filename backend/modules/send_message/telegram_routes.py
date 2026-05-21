@@ -147,8 +147,9 @@ def send_product_tag(product_id):
                 "error": "Produto não encontrado."
             }), 404
 
-        product_name = product["name"]
-        stock = product["stock"]
+        product_data = product[0]
+        product_name = product_data["ds_produto"]
+        stock = product_data["qt_estoque_atual"]
 
         barcode_value = id_to_barcode(product_id)
 
