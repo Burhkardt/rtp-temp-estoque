@@ -1,6 +1,7 @@
 import barcode
 from barcode.writer import ImageWriter
 from flask import Blueprint, jsonify, send_file
+from flask_jwt_extended import jwt_required
 from io import BytesIO
 from database.generic_queries import repository
 from utils.barcode import barcode_to_id, id_to_barcode
@@ -9,6 +10,7 @@ product_bp = Blueprint("products", __name__)
 
 
 @product_bp.route("/", methods=["GET"])
+@jwt_required()
 def get_all_products():
     """
     Get all products
@@ -37,6 +39,7 @@ def get_all_products():
 
 #Retorna o produto ao ler o código de barra
 @product_bp.route("/barcode/<string:barcode>", methods=["GET"])
+@jwt_required()
 def get_product_by_barcode(barcode):
     """
     Get product by barcode
@@ -83,6 +86,7 @@ def get_product_by_barcode(barcode):
 
 #Retorna um código de barra para um determinado produto
 @product_bp.route("/<int:product_id>/barcode", methods=["GET"])
+@jwt_required()
 def get_barcode_by_product(product_id):
     """
     Get barcode image for a product
