@@ -4,7 +4,7 @@ class GenericRepository:
 
     def select_all_products(self):
         query = """
-        SELECT P.CD_PRODUTO, P.DS_PRODUTO
+        SELECT P.CD_PRODUTO, P.DS_PRODUTO, E.QT_ESTOQUE_ATUAL
         FROM PRODUTO P
         JOIN EST_PRO E
         ON P.CD_PRODUTO = E.CD_PRODUTO
