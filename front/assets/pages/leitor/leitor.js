@@ -1,11 +1,10 @@
-// ── TODO: Confirmar a URL base da API com o time de backend ──
 const API_URL = 'http://localhost:5000';
 
 const inputScanner = document.getElementById('input-scanner');
 const btnBuscar    = document.getElementById('btn-buscar');
 const detalheItem  = document.getElementById('detalhe-item');
-const barcodeArea  = document.getElementById('barcode-area');
-const btnImprimir  = document.getElementById('btn-imprimir');
+//const barcodeArea  = document.getElementById('barcode-area');
+//const btnImprimir  = document.getElementById('btn-imprimir');
 
 // ── Token JWT salvo no login ──
 function getHeaders() {
@@ -17,11 +16,11 @@ function getHeaders() {
 }
 
 // ══════════════════════════════════════
-// HABILITA BOTÃO com 13 dígitos (EAN-13)
+// HABILITA BOTÃO MAIS DE 8 CARACTERES NO INPUT
 // ══════════════════════════════════════
 inputScanner.addEventListener('input', () => {
     const valor = inputScanner.value.trim();
-    btnBuscar.disabled = valor.length !== 13;
+    btnBuscar.disabled = valor.length < 8 || valor.length > 14; 
 });
 
 // ══════════════════════════════════════
@@ -32,14 +31,11 @@ btnBuscar.addEventListener('click', async () => {
     if (!barcode) return;
 
     detalheItem.innerHTML = '<span style="color:#adb5bd; font-size:0.85rem;">Buscando produto...</span>';
-    barcodeArea.innerHTML = '';
-    btnImprimir.style.display = 'none';
+    //barcodeArea.innerHTML = '';           
+    //btnImprimir.style.display = 'none';
 
     try {
 
-        // ── TODO: Confirmar endpoint com o backend ──
-        // Endpoint esperado: GET /products/barcode/{codigo}
-        // Retorno esperado: { data: { cd_produto, ds_produto, qt_estoque_atual } }
         const resposta = await fetch(`${API_URL}/products/barcode/${barcode}`, {
             headers: getHeaders()
         });
@@ -58,19 +54,15 @@ btnBuscar.addEventListener('click', async () => {
         if (!resposta.ok) throw new Error('Erro ao buscar produto');
 
         const json = await resposta.json();
-
-        // ── TODO: Ajustar os campos conforme o retorno real da API ──
-        // Exemplo esperado: json.data.ds_produto, json.data.qt_estoque_atual
-        const produto = json.data;
-
+const produto = json.data[0];
         detalheItem.innerHTML = `
             Produto: ${produto.ds_produto ?? '-'}<br>
             Estoque: ${produto.qt_estoque_atual ?? '-'}
         `;
 
-        // Busca a imagem do código de barras
-        // ── TODO: Confirmar o id retornado pela API (cd_produto ou id?) ──
-        await carregarBarcode(produto.cd_produto ?? produto.id);
+//      await carregarBarcode(produto.cd_produto); 
+// O backend ainda não retorna cd_produto.
+
 
     } catch (erro) {
         detalheItem.innerHTML = `<span style="color:#B44848; font-size:0.85rem;">Erro: ${erro.message}</span>`;
@@ -83,9 +75,6 @@ btnBuscar.addEventListener('click', async () => {
 async function carregarBarcode(id) {
     try {
 
-        // ── TODO: Confirmar endpoint com o backend ──
-        // Endpoint esperado: GET /products/{id}/barcode
-        // Retorno esperado: imagem PNG do código de barras
         const resposta = await fetch(`${API_URL}/products/${id}/barcode`, {
             headers: getHeaders()
         });

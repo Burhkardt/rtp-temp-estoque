@@ -3,9 +3,9 @@ const API_URL = 'http://localhost:5000';
 
 const checkTodos = document.getElementById('check-todos');
 const tbody = document.getElementById('tbody-produtos');
-const detalheDiv = document.getElementById('detalhe-produto');
 const barcodeArea = document.getElementById('barcode-area');
 const btnImprimir = document.getElementById('btn-imprimir');
+
 
 // ── Token ──
 function getHeaders() {
@@ -15,6 +15,8 @@ function getHeaders() {
         'Authorization': `Bearer ${token}`
     };
 }
+
+
 
 // ══════════════════════════════════════
 // 1. CARREGAR PRODUTOS DA API
@@ -26,7 +28,7 @@ async function carregarProdutos() {
         </tr>`;
 
     try {
-        const resposta = await fetch(`${API_URL}/products`, {
+        const resposta = await fetch(`${API_URL}/products/`, {
             headers: getHeaders()
         });
 
@@ -37,7 +39,8 @@ async function carregarProdutos() {
 
         if (!resposta.ok) throw new Error('Erro ao buscar produtos');
 
-        const produtos = await resposta.json();
+        const json = await resposta.json();
+        const produtos = json.data;
 
         if (!produtos || produtos.length === 0) {
             tbody.innerHTML = `
@@ -50,9 +53,9 @@ async function carregarProdutos() {
         tbody.innerHTML = '';
         produtos.forEach(produto => {
             const tr = document.createElement('tr');
-            tr.dataset.id = produto.cd_produto;
-            tr.dataset.codigo = produto.cd_produto;
-            tr.dataset.nome = produto.ds_produto;
+            tr.dataset.id      = produto.cd_produto;
+            tr.dataset.codigo  = produto.cd_produto;
+            tr.dataset.nome    = produto.ds_produto;
             tr.dataset.estoque = produto.qt_estoque_atual ?? '-';
 
             tr.innerHTML = `
@@ -64,8 +67,6 @@ async function carregarProdutos() {
             tbody.appendChild(tr);
         });
 
-        configurarCheckboxes();
-        configurarSelecaoLinha();
         atualizarPainel();
 
     } catch (erro) {
@@ -117,7 +118,7 @@ function configurarSelecaoLinha() {
 }
 
 // ══════════════════════════════════════
-// 4. PAINEL DIREITO — detalhes + barcode
+// 4. PAINEL DIREITO 
 // ══════════════════════════════════════
 async function atualizarPainel() {
     const selecionados = [...tbody.querySelectorAll('input[type="checkbox"]:checked')]
@@ -141,18 +142,7 @@ async function atualizarPainel() {
     }
 
     // Exatamente um selecionado
-    const tr = selecionados[0];
-    const id = tr.dataset.id;
-    const codigo = tr.dataset.codigo;
-    const nome = tr.dataset.nome;
-    const estoque = tr.dataset.estoque;
-
-    detalheDiv.innerHTML = `
-        Código: ${codigo}<br>
-        Produto: ${nome}<br>
-        Estoque: ${estoque}
-    `;
-
+    const id = selecionados[0].dataset.id;
     await carregarBarcode(id);
 }
 
@@ -188,6 +178,7 @@ async function carregarBarcode(id) {
         btnImprimir.onclick = () => {
             const janela = window.open('', '_blank');
             janela.document.write(`<img src="${imgUrl}" onload="window.print();window.close();">`);
+            
         };
 
     } catch (erro) {
@@ -201,4 +192,6 @@ async function carregarBarcode(id) {
 // ══════════════════════════════════════
 // 5. INICIALIZA
 // ══════════════════════════════════════
+configurarCheckboxes();
+configurarSelecaoLinha();
 carregarProdutos();
