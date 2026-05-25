@@ -1,0 +1,32 @@
+security:
+  - Bearer: []
+tags:
+  - Telegram
+consumes:
+  - application/json
+parameters:
+  - name: message
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+        parse_mode:
+          type: string
+          description: Optional parse mode (Markdown/HTML)
+responses:
+  200:
+    description: Mensagem enviada com sucesso
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message_id:
+          type: integer
+  400:
+    description: JSON inválido ou campo obrigatório ausente
+  500:
+    description: Erro ao enviar mensagem

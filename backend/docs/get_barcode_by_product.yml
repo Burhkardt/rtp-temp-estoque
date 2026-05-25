@@ -1,0 +1,19 @@
+security:
+  - Bearer: []
+tags:
+  - Products
+parameters:
+  - name: product_id
+    in: path
+    type: integer
+    required: true
+    description: ID do produto
+responses:
+  200:
+    description: Retorna imagem PNG do código de barras
+    schema:
+      type: file
+  404:
+    description: Produto não encontrado
+  500:
+    description: Erro interno do servidor

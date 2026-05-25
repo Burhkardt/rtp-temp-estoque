@@ -1,0 +1,16 @@
+security:
+  - Bearer: []
+tags:
+  - Products
+responses:
+  200:
+    description: Lista de produtos retornada com sucesso
+    schema:
+      type: object
+      properties:
+        data:
+          type: array
+        total:
+          type: integer
+  500:
+    description: Erro interno do servidor

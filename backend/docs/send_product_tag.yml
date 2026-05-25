@@ -1,0 +1,24 @@
+security:
+  - Bearer: []
+tags:
+  - Telegram
+parameters:
+  - name: product_id
+    in: path
+    type: integer
+    required: true
+    description: ID do produto para gerar etiqueta
+responses:
+  200:
+    description: Etiqueta enviada com sucesso
+    schema:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message_id:
+          type: integer
+  404:
+    description: Produto não encontrado
+  500:
+    description: Erro interno do servidor

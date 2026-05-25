@@ -7,6 +7,7 @@ from barcode.writer import ImageWriter
 from io import BytesIO
 from database.generic_queries import repository
 from utils.barcode import id_to_barcode
+from flasgger import swag_from
 
 telegram_bp = Blueprint('telegram', __name__)
 
@@ -41,40 +42,10 @@ def send_photo_to_channel(photo_bytes, caption: str, parse_mode: str = "Markdown
 # Envia a mensagem de texto para o canal
 @telegram_bp.route("/send", methods=["POST"])
 @jwt_required()
+@swag_from("../../docs/send_message.yml")
 def send_message():
     """
     Send a text message to Telegram channel
-    ---
-    tags:
-      - Telegram
-    consumes:
-      - application/json
-    parameters:
-      - name: message
-        in: body
-        required: true
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-            parse_mode:
-              type: string
-              description: Optional parse mode (Markdown/HTML)
-    responses:
-      200:
-        description: Mensagem enviada com sucesso
-        schema:
-          type: object
-          properties:
-            success:
-              type: boolean
-            message_id:
-              type: integer
-      400:
-        description: JSON inválido ou campo obrigatório ausente
-      500:
-        description: Erro ao enviar mensagem
     """
     try:
         data = request.get_json(silent=True)
@@ -111,32 +82,10 @@ def send_message():
 #Envia a mensagem completa, dados do produto com o código de barras
 @telegram_bp.route("/send-product-tag/<int:product_id>", methods=["POST"])
 @jwt_required()
+@swag_from("../../docs/send_product_tag.yml")
 def send_product_tag(product_id):
     """
     Send product tag (image + details) to Telegram channel
-    ---
-    tags:
-      - Telegram
-    parameters:
-      - name: product_id
-        in: path
-        type: integer
-        required: true
-        description: ID do produto para gerar etiqueta
-    responses:
-      200:
-        description: Etiqueta enviada com sucesso
-        schema:
-          type: object
-          properties:
-            success:
-              type: boolean
-            message_id:
-              type: integer
-      404:
-        description: Produto não encontrado
-      500:
-        description: Erro interno do servidor
     """
 
     try:

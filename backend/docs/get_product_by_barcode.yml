@@ -1,0 +1,24 @@
+security:
+  - Bearer: []
+tags:
+  - Products
+parameters:
+  - name: barcode
+    in: path
+    type: string
+    required: true
+    description: Código de barras a ser consultado
+responses:
+  200:
+    description: Produto encontrado
+    schema:
+      type: object
+      properties:
+        data:
+          type: object
+  400:
+    description: Código de barras inválido
+  404:
+    description: Produto não encontrado
+  500:
+    description: Erro interno do servidor

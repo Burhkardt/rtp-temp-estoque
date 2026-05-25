@@ -5,30 +5,17 @@ from flask_jwt_extended import jwt_required
 from io import BytesIO
 from database.generic_queries import repository
 from utils.barcode import barcode_to_id, id_to_barcode
+from flasgger import swag_from
 
 product_bp = Blueprint("products", __name__)
 
 
 @product_bp.route("/", methods=["GET"])
 @jwt_required()
+@swag_from("../../docs/get_all_products.yml")
 def get_all_products():
     """
     Get all products
-    ---
-    tags:
-      - Products
-    responses:
-      200:
-        description: Lista de produtos retornada com sucesso
-        schema:
-          type: object
-          properties:
-            data:
-              type: array
-            total:
-              type: integer
-      500:
-        description: Erro interno do servidor
     """
     try:
         products = repository.select_all_products()
@@ -40,32 +27,10 @@ def get_all_products():
 #Retorna o produto ao ler o código de barra
 @product_bp.route("/barcode/<string:barcode>", methods=["GET"])
 @jwt_required()
+@swag_from("../../docs/get_product_by_barcode.yml")
 def get_product_by_barcode(barcode):
     """
     Get product by barcode
-    ---
-    tags:
-      - Products
-    parameters:
-      - name: barcode
-        in: path
-        type: string
-        required: true
-        description: Código de barras a ser consultado
-    responses:
-      200:
-        description: Produto encontrado
-        schema:
-          type: object
-          properties:
-            data:
-              type: object
-      400:
-        description: Código de barras inválido
-      404:
-        description: Produto não encontrado
-      500:
-        description: Erro interno do servidor
     """
     try:
         if len(barcode) < 2:
@@ -87,27 +52,10 @@ def get_product_by_barcode(barcode):
 #Retorna um código de barra para um determinado produto
 @product_bp.route("/<int:product_id>/barcode", methods=["GET"])
 @jwt_required()
+@swag_from("../../docs/get_barcode_by_product.yml")
 def get_barcode_by_product(product_id):
     """
     Get barcode image for a product
-    ---
-    tags:
-      - Products
-    parameters:
-      - name: product_id
-        in: path
-        type: integer
-        required: true
-        description: ID do produto
-    responses:
-      200:
-        description: Retorna imagem PNG do código de barras
-        schema:
-          type: file
-      404:
-        description: Produto não encontrado
-      500:
-        description: Erro interno do servidor
     """
     try:
         product = repository.select_product_by_id(product_id)
