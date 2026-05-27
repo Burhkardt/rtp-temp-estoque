@@ -146,3 +146,86 @@
     background-color: var(--vermelho-principal, #B44848);
     color: white;
 }
+
+
+
+/* ══════════════════════════════════════
+    Paginação com botões
+   ══════════════════════════════════════ */
+
+.paginacao {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 16px 0 8px;
+    flex-wrap: wrap;
+}
+
+/* ── Base de todos os botões ── */
+.pag-btn {
+    border: none;
+    border-radius: 50px;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Botões de navegação: |< < > >| ── */
+.pag-btn--nav {
+    background-color: transparent;
+    color: var(--azul-principal, #1D4587);
+    border: 1px solid var(--azul-principal, #1D4587);
+    padding: 7px 13px;
+    min-width: 36px;
+}
+
+.pag-btn--nav:hover:not(:disabled) {
+    background-color: var(--azul-claro, #E0EEFF);
+}
+
+/* ── Botões de número ── */
+.pag-btn--numero {
+    background-color: transparent;
+    color: var(--azul-escuro, #022154);
+    border: 1px solid transparent;
+    padding: 7px 12px;
+    min-width: 36px;
+}
+
+.pag-btn--numero:hover:not(:disabled) {
+    background-color: var(--azul-claro, #E0EEFF);
+    border-color: var(--azul-claro, #E0EEFF);
+}
+
+/* ── Página atual (ativo) ── */
+.pag-btn--ativo {
+    background-color: var(--azul-escuro, #022154);
+    color: white;
+    border: 1px solid var(--azul-escuro, #022154);
+    padding: 7px 12px;
+    min-width: 36px;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* ── Desativado: |< e < na primeira página; > e >| na última ── */
+.pag-btn--desativado {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ── Reticências ── */
+.pag-ellipsis {
+    font-size: 0.85rem;
+    color: var(--azul-escuro, #022154);
+    padding: 0 4px;
+    user-select: none;
+}

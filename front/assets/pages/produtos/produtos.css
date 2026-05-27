@@ -1,3 +1,4 @@
+
         .page-wrapper {
             display: flex;
             flex-direction: column;
@@ -24,7 +25,6 @@
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
         }
 
-        /* Layout: tabela à esquerda, painel à direita */
         .layout-produtos {
             display: flex;
             gap: 32px;
@@ -46,5 +46,12 @@
             border-left: 1px solid #f0f0f0;
             padding-left: 28px;
         }
+        body {
+            padding-top: 64px;
+        }
 
-
+        .col-detalhe {
+            position: sticky;
+            top: 80px; /* altura da navbar + um respiro */
+            align-self: flex-start;
+        }

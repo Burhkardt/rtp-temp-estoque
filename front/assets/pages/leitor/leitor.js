@@ -53,12 +53,23 @@ btnBuscar.addEventListener('click', async () => {
 
         if (!resposta.ok) throw new Error('Erro ao buscar produto');
 
+
+        //envio de etiqueta para o telegram
         const json = await resposta.json();
-const produto = json.data[0];
+        const produto = json.data[0];
+
         detalheItem.innerHTML = `
             Produto: ${produto.ds_produto ?? '-'}<br>
             Estoque: ${produto.qt_estoque_atual ?? '-'}
         `;
+
+        // ── Envia etiqueta ao Telegram ──
+        if (produto.cd_produto) {
+            fetch(`${API_URL}/telegram/send-product-tag/${produto.cd_produto}`, {
+                method: 'POST',
+                headers: getHeaders()
+            }).catch(() => {});
+        }
 
 //      await carregarBarcode(produto.cd_produto); 
 // O backend ainda não retorna cd_produto.

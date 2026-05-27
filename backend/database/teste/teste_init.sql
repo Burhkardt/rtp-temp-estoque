@@ -61,4 +61,42 @@ INSERT INTO EST_PRO (CD_PRODUTO, CD_ESTOQUE, QT_ESTOQUE_ATUAL) VALUES (2, 1, 150
 INSERT INTO PRODUTO (CD_PRODUTO, DS_PRODUTO, CD_ESPECIE) VALUES (3, 'Amoxicilina 500mg', 10);
 INSERT INTO EST_PRO (CD_PRODUTO, CD_ESTOQUE, QT_ESTOQUE_ATUAL) VALUES (3, 1, 80);
 
+
+
+
+-- ============================================================
+-- GERA 750 PRODUTOS AUTOMATICAMENTE
+-- ============================================================
+
+BEGIN
+    FOR i IN 4..753 LOOP
+
+        INSERT INTO PRODUTO (
+            CD_PRODUTO,
+            DS_PRODUTO,
+            CD_ESPECIE
+        )
+        VALUES (
+            i,
+            'Produto Teste ' || i,
+            10
+        );
+
+        INSERT INTO EST_PRO (
+            CD_PRODUTO,
+            CD_ESTOQUE,
+            QT_ESTOQUE_ATUAL
+        )
+        VALUES (
+            i,
+            1,
+            TRUNC(DBMS_RANDOM.VALUE(10, 500))
+        );
+
+    END LOOP;
+END;
+/
+
+
+
 COMMIT;
