@@ -18,6 +18,7 @@ class GenericRepository:
         # Em Oracle Python, usamos :nome para binds, igual ao Node
         query = """
         SELECT 
+        A.CD_PRODUTO,
         A.DS_PRODUTO, 
         B.QT_ESTOQUE_ATUAL 
         FROM PRODUTO A 
